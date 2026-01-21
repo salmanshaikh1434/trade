@@ -10,6 +10,7 @@ import { calculateEMAs } from '@/lib/indicators/ema';
 import { getSignal } from '@/lib/decision/decisionEngine';
 import { scanStocks } from '@/lib/scanner/stockScanner';
 import { getDefaultUniverse } from '@/lib/config/stockUniverse';
+import { initializeDefaultPosition, getPosition } from '@/lib/position/positionManager';
 import { TrendingUp, LayoutGrid, Zap, Menu, Bell, User } from 'lucide-react';
 
 export default function Home() {
@@ -25,6 +26,11 @@ export default function Home() {
     const [view, setView] = useState<'single' | 'scanner'>('single');
     const [scanResults, setScanResults] = useState<any>(null);
     const [scanning, setScanning] = useState(false);
+
+    // Initialize default position on mount
+    useEffect(() => {
+        initializeDefaultPosition();
+    }, []);
 
     const handleFetch = async (selectedSymbol: string, selectedInterval: string) => {
         setLoading(true);
@@ -46,7 +52,11 @@ export default function Home() {
             setEma30(ema30Values);
             setEma50(ema50Values);
 
-            const signal = getSignal(data.candles, ema30Values, ema50Values);
+            // Get buying price from localStorage for this symbol
+            const position = getPosition(selectedSymbol);
+            const buyingPrice = position?.buyingPrice || undefined;
+
+            const signal = getSignal(data.candles, ema30Values, ema50Values, buyingPrice);
             setSignalData(signal);
         } catch (err: any) {
             setError(err.message || 'Failed to fetch data');
@@ -174,7 +184,7 @@ export default function Home() {
                                 </div>
 
                                 <div className="space-y-8">
-                                    <SignalPanel signalData={signalData} />
+                                    <SignalPanel signalData={signalData} symbol={symbol} />
 
                                     {/* Additional Stats Card */}
                                     <div className="glass rounded-2xl p-6 border-white/5">
@@ -203,7 +213,7 @@ export default function Home() {
                                 </div>
                                 <h2 className="text-3xl font-black text-slate-100 mb-4 tracking-tight">Ready to analyze the market?</h2>
                                 <p className="text-slate-400 max-w-md mx-auto text-lg leading-relaxed">
-                                    Enter a symbol like <span className="text-blue-400 font-bold">RELIANCE</span> or <span className="text-blue-400 font-bold">NSE:INFY</span> and choose a timeframe to reveal professional grade trading insights.
+                                    Enter a symbol like <span className="text-blue-400 font-bold">HINDZINC</span> or <span className="text-blue-400 font-bold">NSE:INFY</span> and choose a timeframe to reveal professional grade trading insights.
                                 </p>
                             </div>
                         )}

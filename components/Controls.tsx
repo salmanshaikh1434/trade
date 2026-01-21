@@ -9,7 +9,7 @@ interface ControlsProps {
 }
 
 export default function Controls({ onFetch, loading }: ControlsProps) {
-    const [symbol, setSymbol] = useState('NSE:RELIANCE');
+    const [symbol, setSymbol] = useState('NSE:HINDZINC');
     const [interval, setInterval] = useState('4h');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -29,7 +29,7 @@ export default function Controls({ onFetch, loading }: ControlsProps) {
                         id="symbol"
                         value={symbol}
                         onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-                        placeholder="e.g., NSE:RELIANCE"
+                        placeholder="e.g., NSE:HINDZINC"
                         disabled={loading}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
                     />
